@@ -35,42 +35,42 @@ Kali masina töölauale SCP protokolli kaudu.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  KALI MASIN (analüütiku tööjaam)                                   │
-│  IP: 192.168.10.50                                                 │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │ 1. SSH ühendus uuritavasse masinasse                        │  │
-│  │ 2. Käivitab VALVUR githubi ühe rea käsuga                   │  │
-│  │ 3. Ootab tulemusi                                            │  │
-│  └──────────────────────────────────────────────────────────────┘  │
+│  KALI MASIN (analüütiku tööjaam)                                    │
+│  IP: 192.168.10.50                                                  │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │ 1. SSH ühendus uuritavasse masinasse                         │   │
+│  │ 2. Käivitab VALVUR githubi ühe rea käsuga                    │   │
+│  │ 3. Ootab tulemusi                                            │   │
+│  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
                               │
                     SSH (port 22)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  UURITAV MASIN (DC / server / ruuter / klient)                    │
-│  OS: Windows või Linux                                             │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │ 1. VALVUR kloonitakse GitHubist                              │  │
-│  │ 2. L uuakse Python venv                                       │  │
-│  │ 3. Käivitatakse VALVUR_master.py (interaktiivne menüü)      │  │
-│  │ 4. Analüüsitakse süsteemi                                    │  │
-│  │ 5. Tulemused pakitakse ZIP-ks                                │  │
-│  │ 6. Saadetakse SCP-ga tagasi Kali masinasse                   │  │
-│  └──────────────────────────────────────────────────────────────┘  │
+│  UURITAV MASIN (DC / server / ruuter / klient)                      │
+│  OS: Windows või Linux                                              │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │ 1. VALVUR kloonitakse GitHubist                              │   │
+│  │ 2. L uuakse Python venv                                      │   │
+│  │ 3. Käivitatakse VALVUR_master.py (interaktiivne menüü)       │   │
+│  │ 4. Analüüsitakse süsteemi                                    │   │
+│  │ 5. Tulemused pakitakse ZIP-ks                                │   │
+│  │ 6. Saadetakse SCP-ga tagasi Kali masinasse                   │   │
+│  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
                               │
                     SCP (port 22)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  KALI MASIN (tulemused kohal)                                     │
-│  /home/kali/Desktop/VALVUR_TULEMUSED/                             │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │ VALVUR_dc01_20260518_143022.zip                              │  │
-│  │ VALVUR_fileserver_20260518_151045.zip                        │  │
-│  │ VALVUR_ruuter_20260518_160230.zip                            │  │
-│  └──────────────────────────────────────────────────────────────┘  │
+│  KALI MASIN (tulemused kohal)                                       │
+│  /home/kali/Desktop/VALVUR_TULEMUSED/                               │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │ VALVUR_dc01_20260518_143022.zip                              │   │
+│  │ VALVUR_fileserver_20260518_151045.zip                        │   │
+│  │ VALVUR_ruuter_20260518_160230.zip                            │   │
+│  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
