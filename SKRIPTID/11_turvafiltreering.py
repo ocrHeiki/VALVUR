@@ -54,7 +54,7 @@ def filter_security_events():
     out_file = os.path.join(in_dir, '11_tulemus_turvafiltreering.csv')
     # Uuendatud ja täispikk kriitiliste sündmuste nimekiri vastavalt SOC standardile
 critical_ids = [
-    # --- Sinu algsed baas-ID-d ---
+    # --- Minu algsed baas-ID-d ---
     4624,  # Edukas sisselogimine (Successful logon)
     4625,  # Ebaõnnestunud sisselogimine (Failed logon)
     4672,  # Administraatori õiguste määramine sisselogimisel (Admin logon)
@@ -77,7 +77,11 @@ critical_ids = [
     4719,  # Süsteemse auditeerimispoliitika muutmine (Logimise väljalülitamine)
     1116,  # Windows Defender: Tuvastati pahavara (Malware detected)
     1117,  # Windows Defender: Pahavara tegevus blokeeriti (Malware blocked)
-    5007   # Windows Defender: Seadete muutmine (Tulemüüri/kaitse deaktiveerimise katse)
+    5007,  # Windows Defender: Seadete muutmine (Tulemüüri/kaitse deaktiveerimise katse)
+    4698,  # A scheduled task was created (Ajastatud toiming LOODI)
+    4702,  # A scheduled task was updated (Ajastatud toimingut MUUDETI)
+    4699,  # A scheduled task was deleted (Ajastatud toiming KUSTUTATI)
+    
 ]
     all_results = []
     if not os.path.exists(in_dir): return
