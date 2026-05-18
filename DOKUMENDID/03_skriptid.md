@@ -1,3 +1,4 @@
+```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -20,7 +21,7 @@
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
-
+```
 # VALVUR Skriptide Ülevaade
 
 VALVUR koosneb etapiviisilistest skriptidest, mida juhib `valvurMASTER.py`. Allpool on toodud skriptide loogiline tööjärjekord.
