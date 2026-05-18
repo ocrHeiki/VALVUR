@@ -13,10 +13,10 @@
 #   =======================================================================   #
 #   |                                                                     |   #
 #   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
-#   |   FAILI NIMI:  VALVUR_EKSAM_STRATEEGIA.md                    |   #
+#   |   FAILI NIMI:  VALVUR_EKSAM_STRATEEGIA.md                           |   #
 #   |   LOODUD:      2026-05-15                                           |   #
 #   |   AUTOR:       Heiki Rebane                                         |   #
-#   |   KIRJELDUS:   Masinapõhine intsidendi lahendamise strateegia. |   #
+#   |   KIRJELDUS:   Masinapõhine intsidendi lahendamise strateegia.      |   #
 #   |                                                                     |   #
 #   =======================================================================   #
 #                                                                             #
