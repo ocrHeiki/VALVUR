@@ -34,7 +34,18 @@ import tempfile
 REPO_URL = "https://github.com/ocrHeiki/VALVUR.git"
 
 def main():
+    # KALI_IP saab määrata:
+    #   1) keskkonnamuutujana:  KALI_IP=192.168.1.100 python3 -c "$(curl ...)"
+    #   2) käsurea argumendina: python3 -c "$(curl ...)" 192.168.1.100
+    kali_ip = os.environ.get("KALI_IP", "")
+    if not kali_ip and len(sys.argv) > 1:
+        kali_ip = sys.argv[1]
+
     print("[*] VALVUR BOOTSTRAP ALUSTAB...")
+    if kali_ip:
+        print(f"[*] KALI IP: {kali_ip} (eksfiltreerimine aktiivne)")
+    else:
+        print("[*] KALI IP: määramata (seadistad hiljem menüüst)")
 
     work_dir = os.path.join(tempfile.gettempdir(), "VALVUR_LIVE")
     if os.path.exists(work_dir): shutil.rmtree(work_dir)
@@ -58,8 +69,14 @@ def main():
 
     print("\n" + "="*60)
     print("   VALVUR KÄIVITUB VIRTUAALKESKKONNAS")
+    print("   (interaktiivne master koos SCP eksfiltreerimisega)")
     print("="*60 + "\n")
-    subprocess.run([python_exe, "SKRIPTID/valvurMASTER.py"])
+
+    # Edasta KALI_IP alamprotsessi
+    env = os.environ.copy()
+    if kali_ip and not env.get("KALI_IP"):
+        env["KALI_IP"] = kali_ip
+    subprocess.run([python_exe, "SKRIPTID/VALVUR_master.py"], env=env)
 
 if __name__ == "__main__":
     main()
