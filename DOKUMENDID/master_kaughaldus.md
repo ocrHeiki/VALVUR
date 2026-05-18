@@ -1,4 +1,3 @@
-```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -22,7 +21,7 @@
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
-```
+
 # VALVUR – Keskne Master Launcher ja Kaughalduse Eksfiltreerimine
 
 See dokument kirjeldab, kuidas kasutada `VALVUR_master.py` ja `launch_VALVUR.py`
@@ -35,42 +34,42 @@ Kali masina töölauale SCP protokolli kaudu.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  KALI MASIN (analüütiku tööjaam)                                    │
-│  IP: 192.168.10.50                                                  │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │ 1. SSH ühendus uuritavasse masinasse                         │   │
-│  │ 2. Käivitab VALVUR githubi ühe rea käsuga                    │   │
-│  │ 3. Ootab tulemusi                                            │   │
-│  └──────────────────────────────────────────────────────────────┘   │
+│  KALI MASIN (analüütiku tööjaam)                                   │
+│  IP: 192.168.10.50                                                 │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ 1. SSH ühendus uuritavasse masinasse                        │  │
+│  │ 2. Käivitab VALVUR githubi ühe rea käsuga                   │  │
+│  │ 3. Ootab tulemusi                                            │  │
+│  └──────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────┘
                               │
                     SSH (port 22)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  UURITAV MASIN (DC / server / ruuter / klient)                      │
-│  OS: Windows või Linux                                              │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │ 1. VALVUR kloonitakse GitHubist                              │   │
-│  │ 2. Luuakse Python venv                                       │   │
-│  │ 3. Käivitatakse VALVUR_master.py (interaktiivne menüü)       │   │
-│  │ 4. Analüüsitakse süsteemi                                    │   │
-│  │ 5. Tulemused pakitakse ZIP-ks                                │   │
-│  │ 6. Saadetakse SCP-ga tagasi Kali masinasse                   │   │
-│  └──────────────────────────────────────────────────────────────┘   │
+│  UURITAV MASIN (DC / server / ruuter / klient)                    │
+│  OS: Windows või Linux                                             │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ 1. VALVUR kloonitakse GitHubist                              │  │
+│  │ 2. L uuakse Python venv                                       │  │
+│  │ 3. Käivitatakse VALVUR_master.py (interaktiivne menüü)      │  │
+│  │ 4. Analüüsitakse süsteemi                                    │  │
+│  │ 5. Tulemused pakitakse ZIP-ks                                │  │
+│  │ 6. Saadetakse SCP-ga tagasi Kali masinasse                   │  │
+│  └──────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────┘
                               │
                     SCP (port 22)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  KALI MASIN (tulemused kohal)                                       │
-│  /home/kali/Desktop/VALVUR_TULEMUSED/                               │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │ VALVUR_dc01_20260518_143022.zip                              │   │
-│  │ VALVUR_fileserver_20260518_151045.zip                        │   │
-│  │ VALVUR_ruuter_20260518_160230.zip                            │   │
-│  └──────────────────────────────────────────────────────────────┘   │
+│  KALI MASIN (tulemused kohal)                                     │
+│  /home/kali/Desktop/VALVUR_TULEMUSED/                             │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ VALVUR_dc01_20260518_143022.zip                              │  │
+│  │ VALVUR_fileserver_20260518_151045.zip                        │  │
+│  │ VALVUR_ruuter_20260518_160230.zip                            │  │
+│  └──────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -87,25 +86,48 @@ python3 -c "$(curl -fsSL https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/
 Skript kloonib repo, loob venv ja käivitab interaktiivse menüü.
 Eksfiltreerimist saab hiljem seadistada menüüst **5**.
 
-### 1.2 Käivitus koos Kali IP-ga (soovitatud)
+### 1.2 Käivitus automaatse Kali IP tuvastusega (soovitatud)
 
-**Variant A – keskkonnamuutuja:**
+Skript tuvastab KALI_IP **automaatselt** kolmel viisil:
+
+| Allikas | Kuidas | Millal kasutusel |
+|---------|--------|------------------|
+| **SSH_CLIENT** | `os.environ["SSH_CLIENT"].split()[0]` | Kui SSH-d sihtmasinasse (eksamil alati) |
+| **KALI_IP env** | `$KALI_IP` keskkonnamuutuja | Kui anna eksplitsiitselt kaasa |
+| **.kali_config** | Püsiv konfiguratsioonifail | Kui oled varem seadistanud |
+
+**Variant A – täiesti automaatne (SSH_CLIENT):**
+```bash
+python3 -c "$(curl -fsSL https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.py)"
+```
+> ⚡ See on eksami kuldvariant. SSH-d sisse, kleebi rida, tulemused tulevad ise.
+
+**Variant B – keskkonnamuutuja (kaalub SSH_CLIENT üle):**
 ```bash
 KALI_IP=192.168.10.50 python3 -c "$(curl -fsSL https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.py)"
 ```
 
-**Variant B – käsurea argument:**
+**Variant C – käsurea argument:**
 ```bash
 python3 -c "$(curl -fsSL https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.py)" 192.168.10.50
 ```
 
-**Variant C – automaatne (Kali enda IP):**
-```bash
-KALI_IP=$(hostname -I | awk '{print $1}') python3 -c "$(curl -fsSL https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.py)"
+### 1.3 Windowsi masina käivitus (PowerShell)
+
+```powershell
+$env:KALI_IP="192.168.10.50"; iex (iwr -UseBasicParsing "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.ps1")
 ```
 
-> ⚡ **Eksami nipp:**  selle käsuga ei pea sa ühtegi IP-d meelde jätma –
-> Kali IP võetakse automaatselt ja tulemused jõuavad otse töölauale.
+Automaatse Kali IP-ga (DHCP liidese järgi):
+```powershell
+$ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.InterfaceAlias -ne "Loopback" -and $_.PrefixOrigin -eq "Dhcp"}).IPAddress; $env:KALI_IP="$ip"; iex (iwr -UseBasicParsing "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.ps1")
+```
+
+> ⚡ **Nõuded Windowsil:**  Git for Windows ja Python 3 peavad olema
+> paigaldatud. Kui pole, paigalda administraatorina:
+> ```
+> winget install Git.Git Python.Python.3
+> ```
 
 ---
 
@@ -149,7 +171,8 @@ Pärast käivitust kuvatakse:
    ssh heiki@itsh-eksam-dc01
 
 2. Uuritavas masinas (DC):
-   KALI_IP=$(hostname -I | awk '{print $1}') python3 -c "$(curl -fsSL ...)"
+   python3 -c "$(curl -fsSL ...)"
+   ╰─ KALI_IP tuleb automaatselt $SSH_CLIENT seest
 
 3. VALVUR menüüs:
    Vali "3. KÕIK MOODULID"
@@ -163,15 +186,20 @@ Pärast käivitust kuvatakse:
 ### Eksami stsenaarium 2 – ainult E-ITS audit
 
 ```
-1. KALI_IP=192.168.10.50 python3 -c "$(curl -fsSL ...)"
+1. Kali masinas:
+   ssh heiki@itsh-eksam-fileserver
 
-2. Menüüs:
+2. Uuritavas masinas:
+   python3 -c "$(curl -fsSL ...)"
+   ╰─ SSH_CLIENT annab Kali IP automaatselt
+
+3. Menüüs:
    Vali "2. FAAS 4 – E-ITS 2024 audit"
 
-3. ZIP saabub Kali töölauale sisuga:
-   34_tulemus_eits_vastavus.txt
-   31_tulemus_vorgu_skaneerimine.txt
-   32_tulemus_kasutajate_audit.csv
+4. ZIP saabub Kali töölauale sisuga:
+    34_tulemus_eits_vastavus.txt
+    31_tulemus_vorgu_skaneerimine.txt
+    32_tulemus_kasutajate_audit.csv
 ```
 
 ---
@@ -185,9 +213,15 @@ cd VALVUR
 python3 SKRIPTID/VALVUR_master.py
 ```
 
-Kali IP seadistamiseks:
+Kali IP seadistamiseks (kaalub SSH_CLIENT üle):
 ```bash
 KALI_IP=192.168.10.50 python3 SKRIPTID/VALVUR_master.py
+```
+
+Kui oled SSH kaudu, piisab lihtsalt:
+```bash
+python3 SKRIPTID/VALVUR_master.py
+# ╰─ KALI_IP tuvastatakse $SSH_CLIENT põhjal automaatselt
 ```
 
 Või menüüst valik **5** – seadistus salvestub faili
@@ -254,8 +288,10 @@ ssh-copy-id kali@192.168.10.50
 | `ssh: connect to host ... port 22: Connection refused` | Kali SSH server ei jookse | `sudo systemctl start ssh` |
 | `scp: ... No such file or directory` | Sihtkaust puudub | `mkdir -p /home/kali/Desktop/VALVUR_TULEMUSED` |
 | `Permission denied (publickey,password)` | SSH autentimine ebaõnnestus | Kontrolli parooli või sea võtmed |
-| `git: command not found` | Git pole paigaldatud | `sudo apt install git` |
+| `git: command not found` | Git pole paigaldatud | `sudo apt install git` (või `winget install Git.Git` Windowsil) |
+| `python` / `python3` not found | Python 3 puudub | `sudo apt install python3` või `winget install Python.Python.3` |
 | Tulemused jäid kohalikku | SCP ebaõnnestus | Otsi pakifail menüüst: `VALVUR_*.zip` asub `SKRIPTID/` kõrval |
+| Windowsil SCP ei tööta | OpenSSH Client pole paigaldatud | Lisa Windowsi valikulised funktsioonid: `Add-WindowsCapability -Online -Name OpenSSH.Client*` |
 
 ---
 
@@ -291,7 +327,7 @@ VALVUR Master Launcher võimaldab:
 1. **SSH** kaudu analüüsida kaugmasinat ilma füüsilise ligipääsuta
 2. **Automaatne tulemuste tagastus** Kali masinasse SCP protokolli kaudu
 3. **Menüüpõhine valik** – kiiranalüüs, E-ITS audit või täielik intsidendianalüüs
-4. **IP edastamine** githubi ühe rea käsuga – IP tuleb kaasa juba käivitushetkel
+4. **IP tuvastus $SSH_CLIENT põhjal** – skript võtab Kali IP ise `$SSH_CLIENT` seest, pole vaja midagi käsitsi kaasa anda
 5. **Püsiv konfiguratsioon** – Kali IP salvestub `.kali_config` faili
 
 > *"VALVUR: analüüs teostatud süsteemi kloonil, tulemused kättesaadavad Kali töölaual."*

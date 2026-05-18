@@ -1,4 +1,3 @@
-```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -13,22 +12,33 @@
 #   =======================================================================   #
 #   |                                                                     |   #
 #   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
-#   |   FAILI NIMI:  DEMO_SPIKK.md                                        |   #
+#   |   FAILI NIMI:  DEMO_SPIKK.md                                 |   #
 #   |   LOODUD:      2026-05-15                                           |   #
 #   |   AUTOR:       Heiki Rebane                                         |   #
-#   |   KIRJELDUS:   Eksami esitlusspikker ja tehniline tugi.             |   #
+#   |   KIRJELDUS:   Eksami esitlusspikker ja tehniline tugi.      |   #
 #   |                                                                     |   #
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
-```
+
 
 # VALVUR - Eksami Esitlusspikker (Demo Cheat Sheet)
 
 Kasuta seda spikrit, kui käivitad skripti komisjoni ees. See aitab täita "vaikust" ja näidata oma asjatundlikkust.
 
-## 1. Algus (MASTER käivitamine)
-- **Mida öelda:** "Käivitan VALVUR-i peamootori. See kontrollib esmalt minu õigusi ja tuvastab, et töö toimub kloonitud masinas, et tagada originaalandmete puutumatus vastavalt ISO standardile."
+## 0. Ühe rea käivitus (GitHubist kaughalduse teel)
+
+```bash
+# SSH-d sihtmärki ja kleebi see rida – KALI_IP tuleb $SSH_CLIENT seest automaatselt
+python3 -c "$(curl -fsSL https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.py)"
+```
+
+- **Mida öelda:** "Käivitan VALVUR-i otse GitHubist ilma kettale kirjutamata. Skript kloonib repo mällu, loob virtuaalkeskkonna ja tuvastab automaatselt minu Kali masina IP $SSH_CLIENT keskkonnamuutuja põhjal. Pärast analüüsi saadetakse tulemused SCP-ga tagasi minu Kali töölauale."
+
+## 1. Menüüvalikud (VALVUR_master.py)
+- **Valik 1 (kiiranalüüs):** "FAAS 1+2 – tervikluskontroll ja turvafiltreering. Kasutan siis, kui on vaja kiirelt anda esmane hinnang."
+- **Valik 2 (E-ITS audit):** "FAAS 4 – E-ITS 2024 baasturvalisuse audit. Kontrollib tulemüüri, paroolipoliitikat, auditlogimist ja võrguseadistust."
+- **Valik 3 (täielik):** "Kõik 5 faasi 14 mooduliga – terviklusest lõppraportini. See on põhjalik intsidendianalüüs."
 
 ## 2. Terviklus (00) ja Import (01)
 - **Mida öelda:** "Nüüd arvutab süsteem logifailidele SHA-256 räsid. See on forensika kuldstandard – kui ma hiljem andmeid muudan, siis räsid ei klapi ja ma jään vahele. Järgmisena kopeerib süsteem lukustatud Windowsi logid turvalisse kohta ja konverteerib need analüüsiks sobivasse CSV-formaati."
