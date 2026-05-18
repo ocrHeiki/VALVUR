@@ -52,7 +52,33 @@ def filter_security_events():
     print(LOGO)
     in_dir = utils.get_output_dir()
     out_file = os.path.join(in_dir, '11_tulemus_turvafiltreering.csv')
-    critical_ids = [4624, 4625, 4672, 4720, 4732, 4739, 4688, 1102, 4104, 1000]
+    # Uuendatud ja täispikk kriitiliste sündmuste nimekiri vastavalt SOC standardile
+critical_ids = [
+    # --- Sinu algsed baas-ID-d ---
+    4624,  # Edukas sisselogimine (Successful logon)
+    4625,  # Ebaõnnestunud sisselogimine (Failed logon)
+    4672,  # Administraatori õiguste määramine sisselogimisel (Admin logon)
+    4720,  # Uue kasutajakonto loomine (User account created)
+    4732,  # Kasutaja lisamine kohalikku turvagruppi (nt Administrators)
+    4739,  # Domeeni või auditeerimise poliitika muutmine
+    4688,  # Uue protsessi loomine / käivitamine (Process creation)
+    1102,  # Security logi tühjendamine (Audit log cleared - Anti-forensics)
+    4104,  # PowerShell skriptiploki käivitamine ja sisu logimine (Script Block)
+    1000,  # Üldine Linuxi süsteemne sündmus / kaardistus sinu koodis
+    
+    # --- Uued täiendused leitud dokumendist ---
+    4648,  # Sisselogimine eksplitsiitsete kredentsiaalidega (Pass-the-Hash tuvastus)
+    4768,  # Kerberos TGT (Ticket Granting Ticket) taotlus (Kerberoasting ründed)
+    4769,  # Kerberos teenusepileti taotlus (Külgsuunaline liikumine ehk Lateral Movement)
+    4776,  # NTLM autentimise kontrollimine domeenikontrolleri poolt (Brute-force)
+    4778,  # RDP sessiooni taasühendamine (Sessiooni kaaperdamine / liikumine)
+    4779,  # RDP sessiooni katkestamine (Session disconnected)
+    104,   # System logifaili tühjendamine (System log cleared - Anti-forensics)
+    4719,  # Süsteemse auditeerimispoliitika muutmine (Logimise väljalülitamine)
+    1116,  # Windows Defender: Tuvastati pahavara (Malware detected)
+    1117,  # Windows Defender: Pahavara tegevus blokeeriti (Malware blocked)
+    5007   # Windows Defender: Seadete muutmine (Tulemüüri/kaitse deaktiveerimise katse)
+]
     all_results = []
     if not os.path.exists(in_dir): return
     csv_files = [f for f in os.listdir(in_dir) if f.startswith('raw_eksport_') and f.endswith('.csv')]
