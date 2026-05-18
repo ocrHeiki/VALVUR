@@ -1,3 +1,4 @@
+```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -21,7 +22,7 @@
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
-
+```
 # VALVUR – Keskne Master Launcher ja Kaughalduse Eksfiltreerimine
 
 See dokument kirjeldab, kuidas kasutada `VALVUR_master.py` ja `launch_VALVUR.py`
@@ -51,7 +52,7 @@ Kali masina töölauale SCP protokolli kaudu.
 │  OS: Windows või Linux                                             │
 │  ┌──────────────────────────────────────────────────────────────┐  │
 │  │ 1. VALVUR kloonitakse GitHubist                              │  │
-│  │ 2. L uuakse Python venv                                       │  │
+│  │ 2. Luuakse Python venv                                       │  │
 │  │ 3. Käivitatakse VALVUR_master.py (interaktiivne menüü)      │  │
 │  │ 4. Analüüsitakse süsteemi                                    │  │
 │  │ 5. Tulemused pakitakse ZIP-ks                                │  │
