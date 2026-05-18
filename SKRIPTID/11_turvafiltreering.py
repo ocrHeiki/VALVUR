@@ -81,6 +81,9 @@ critical_ids = [
     4698,  # A scheduled task was created (Ajastatud toiming LOODI)
     4702,  # A scheduled task was updated (Ajastatud toimingut MUUDETI)
     4699,  # A scheduled task was deleted (Ajastatud toiming KUSTUTATI)
+    5140,  # A network share object was accessed (Jagatud kaustale LIGIPÄÄS)
+    5145,  # Network share object detailed check (Detailne failipöördus jagatud kaustas)
+    4719,  # Auditipoliitika muutmine
     
 ]
     all_results = []
