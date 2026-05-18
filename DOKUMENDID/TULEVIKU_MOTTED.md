@@ -1,3 +1,4 @@
+```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -20,7 +21,7 @@
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
-
+```
 # VALVUR - Strateegiline arendusplaan (Roadmap)
 
 See dokument sätestab VALVUR-i (HeRe) pikaajalise visiooni ja arendusetapid pärast prototüübi edukat kaitsmist.
