@@ -1,3 +1,4 @@
+```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -21,7 +22,7 @@
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
-
+```
 # Turvaline andmete eraldamine (Forensic Data Extraction)
 
 Käesolev juhend käsitleb meetodeid, kuidas eraldada logifaile ja muid tõendeid kompromiteeritud Windowsi masinast VMware keskkonnas nii, et säiliks andmete terviklikkus ja välditaks uuritava süsteemi "saastamist".
