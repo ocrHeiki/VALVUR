@@ -5,3 +5,6 @@ net accounts
 
 # 2. Vaata, kes on lisatud domeeni administraatoriteks (Domain Admins)
 net group "Domain Admins" /domain
+
+
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/SKRIPTID/utils.py" -OutFile ".\SKRIPTID\utils.py" -UseBasicParsing
