@@ -19,8 +19,8 @@
 #   |   LOODUD:      2026-05-18                                           |   #
 #   |   AUTOR:       Heiki Rebane                                         |   #
 #   |   KIRJELDUS:   E-ITS 2024 baasturvalisuse kontroll (kesk/standard/  |   #
-#   |                kõrg). Analüüsib Windowsi, Linuxi, serveri, tulemüüri |   #
-#   |                ja ruuteri turvaseisundit.                            |   #
+#   |                kõrg). Analüüsib Windowsi, Linuxi, serveri,          |   #
+#   |                tulemüüri ja ruuteri turvaseisundit.                 |   #
 #   |   GITHUB:      https://github.com/ocrHeiki/VALVUR                   |   #
 #   |                                                                     |   #
 #   =======================================================================   #
