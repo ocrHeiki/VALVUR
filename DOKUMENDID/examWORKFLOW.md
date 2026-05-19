@@ -40,7 +40,7 @@ tulemusi tagasi saata.
 
 ```bash
 # 1. Uuenda paketid ja paigalda tööriistad
-sudo apt update && sudo apt install -y mc nmap zenmap-kbx net-tools iproute2 freerdp2-x11
+sudo apt update && sudo apt install -y mc nmap zenmap net-tools iproute2 freerdp3-x11
 
 # 2. Käivita SSH server (vajalik VALVUR-i failide vastuvõtmiseks)
 sudo systemctl enable ssh && sudo systemctl start ssh
