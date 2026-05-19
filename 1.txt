@@ -1,18 +1,7 @@
-$env:KALI_IP="192.168.140.104"
-$url = "https://raw.githubusercontent.com/ocrHeiki/VALVUR/SKRIPTID/VALVUR_master.py"
-python -c "$(Invoke-WebRequest -UseBasicParsing $url).Content"
+Set-Content launch_VALVUR.ps1 -Value 'function Main { $env:KALI_IP="192.168.140.104"; Write-Host "VALVUR käivitub... Kali IP on seatud: $env:KALI_IP" -ForegroundColor Green; if (Test-Path "SKRIPTID\VALVUR_master.py") { python SKRIPTID\VALVUR_master.py } else { Write-Host "VIGA: Ei leidnud faili SKRIPTID\VALVUR_master.py!" -ForegroundColor Red } }; Main'
 
+# 1. Kontrolli paroolipoliitikat (Miinimumpikkus, ajalugu jne)
+net accounts
 
-winget install Python.Python.3.11 --silent --accept-package-agreements --accept-source-agreements
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
-# 1. Liigume igaks juhuks Downloads kausta, et asjad ei läheks kaduma
-cd ~\Downloads
-
-# 2. Laadime alla VALVUR käivitusfaili (kontrolli, et aadressis poleks trükivigu)
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.ps1" -OutFile "launch_VALVUR.ps1" -UseBasicParsing
-
-# 3. Teeme SKRIPTID kausta ja tõmbame sinna sisse peamise Pythoni faili
-New-Item -ItemType Directory -Force -Path ".\SKRIPTID"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/SKRIPTID/VALVUR_master.py" -OutFile ".\SKRIPTID\VALVUR_master.py" -UseBasicParsing
+# 2. Vaata, kes on lisatud domeeni administraatoriteks (Domain Admins)
+net group "Domain Admins" /domain
