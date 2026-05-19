@@ -11,8 +11,8 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 cd ~\Downloads
 
 # 2. Laadime alla VALVUR käivitusfaili (kontrolli, et aadressis poleks trükivigu)
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrmeiki/VALVUR/main/launch_VALVUR.ps1" -OutFile "launch_VALVUR.ps1" -UseBasicParsing
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/launch_VALVUR.ps1" -OutFile "launch_VALVUR.ps1" -UseBasicParsing
 
 # 3. Teeme SKRIPTID kausta ja tõmbame sinna sisse peamise Pythoni faili
 New-Item -ItemType Directory -Force -Path ".\SKRIPTID"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrmeiki/VALVUR/main/SKRIPTID/VALVUR_master.py" -OutFile ".\SKRIPTID\VALVUR_master.py" -UseBasicParsing
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/SKRIPTID/VALVUR_master.py" -OutFile ".\SKRIPTID\VALVUR_master.py" -UseBasicParsing
