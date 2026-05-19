@@ -1,3 +1,4 @@
+```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -14,18 +15,18 @@
 #   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
 #   |   FAILI NIMI:  examWORKFLOW.md                                      |   #
 #   |   LOODUD:      2026-05-18                                           |   #
-#   |   AUTOR:       Heiki Rebane (Team 10 - HeRe)                        |   #
-#   |   KIRJELDUS:   Eksami samm-sammuline töövoog. E-ITS audit,         |   #
+#   |   AUTOR:       Heiki Rebane (Team 9 - HeRe)                         |   #
+#   |   KIRJELDUS:   Eksami samm-sammuline töövoog. E-ITS audit,          |   #
 #   |                reaktiivne forensika, intsidentide haldus Kali       |   #
 #   |                masinast kaughalduse teel.                           |   #
 #   |                                                                     |   #
 #   =======================================================================   #
 #                                                                             #
 ###############################################################################
+```
+# 🚀 EKSAMI TÖÖVOOG & SPIKKER — TEAM 9: HeRe
 
-# 🚀 EKSAMI TÖÖVOOG & SPIKKER — TEAM 10: HeRe
-
-See töövoog on optimeeritud keskkonna **itskteam10** proaktiivseks auditeerimiseks
+See töövoog on optimeeritud keskkonna **itskteam9** proaktiivseks auditeerimiseks
 (E-ITS 2024), reaktiivseks forensikaks (MITRE ATT&CK) ja intsidentide
 tsentraalseks lahendamiseks otse analüütiku Kali masinast.
 
