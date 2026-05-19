@@ -10,4 +10,4 @@ net group "Domain Admins" /domain
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrHeiki/VALVUR/main/SKRIPTID/utils.py" -OutFile ".\SKRIPTID\utils.py" -UseBasicParsing
 
 
-wget http://192.168.140.104:8080/SKRIPTID/$(curl -s http://192.168.140.104:8080/SKRIPTID/ | grep -o 'VALVUR_wks2_[^"]*\.zip' | head -n 1) -O ~/Desktop/VALVUR_raport.zip
+scp Administrator@192.168.140.101:/Users/Administrator.WKS2/Desktop/VALVUR_wks2_*.zip ~/Desktop/
