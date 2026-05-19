@@ -1,30 +1,4 @@
 #!/usr/bin/env python3
-"""
-###############################################################################
-#                                                                             #
-#   █████   █████             ████                                            #
-#  ▒▒███   ▒▒███             ▒▒███                                            #
-#   ▒███    ▒███   ██████    ▒███  █████ █████ █████ ████ ████████            #
-#   ▒███    ▒███  ▒▒▒▒▒███   ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███           #
-#   ▒▒███   ███    ███████   ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒            #
-#    ▒▒▒█████▒    ███▒▒███   ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                #
-#      ▒▒███     ▒▒████████ █████   ▒▒█████    ▒▒████████ █████               #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒     ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                #
-#                                                                             #
-#   =======================================================================   #
-#   |                                                                     |   #
-#   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
-#   |   FAILI NIMI:  23_linux_syvaanaluus.py                              |   #
-#   |   LOODUD:      2026-05-15                                           |   #
-#   |   AUTOR:       Heiki Rebane                                         |   #
-#   |   KIRJELDUS:   Linuxi autentimislogide (auth/secure) süvaanalüüs,   |   #
-#   |                kellamanipulatsiooni ja SSH rünnete tuvastus.        |   #
-#   |                                                                     |   #
-#   =======================================================================   #
-#                                                                             #
-###############################################################################
-"""
-
 import os
 import sys
 import re
@@ -32,24 +6,32 @@ import csv
 from datetime import datetime
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
-import utils
+try:
+    import utils
+    logger = utils.setup_logging("LINUX_SYVA")
+    out_dir = utils.get_output_dir()
+except:
+    class DummyLogger:
+        def info(self, msg): print(f"[INFO] {msg}")
+        def warning(self, msg): print(f"[WARN] {msg}")
+        def error(self, msg): print(f"[ERROR] {msg}")
+    logger = DummyLogger()
+    out_dir = "TULEMUSED"
 
 LOGO = r"""
 ###############################################################################
 #                                                                             #
-#   █████   █████             ████                                            #
-#  ▒▒███   ▒▒███             ▒▒███                                            #
-#   ▒███    ▒███   ██████    ▒███  █████ █████ █████ ████ ████████            #
-#   ▒███    ▒███  ▒▒▒▒▒███   ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███           #
-#   ▒▒███   ███    ███████   ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒            #
-#    ▒▒▒█████▒    ███▒▒███   ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                #
-#      ▒▒███     ▒▒████████ █████   ▒▒█████    ▒▒████████ █████               #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒     ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                #
+#   █████   █████             ████                                             #
+#  ▒▒███   ▒▒███             ▒▒███                                             #
+#   ▒███    ▒███   ██████    ▒███  █████ █████ █████ ████ ████████             #
+#   ▒███    ▒███  ▒▒▒▒▒███   ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
+#   ▒▒███   ███    ███████   ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
+#    ▒▒▒█████▒    ███▒▒███   ▒███  ▒▒███ ███    ▒███ ▒███  ▒███                 #
+#      ▒▒███     ▒▒████████ █████  ▒▒█████     ▒▒████████ █████                #
+#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
 #                                                                             #
 ###############################################################################
 """
-
-logger = utils.setup_logging("LINUX_SYVA")
 
 def detect_log_tampering(log_path):
     """
@@ -65,7 +47,7 @@ def detect_log_tampering(log_path):
     try:
         with open(log_path, 'r', encoding='utf-8', errors='ignore') as f:
             for line_num, line in enumerate(f, 1):
-                # 1. Kontrolli null-baite (tüüpiline märk logi purustamisest ründaja poolt)
+                # 1. Kontrolli null-baite
                 if '\x00' in line:
                     anomalies.append({
                         "EventID": "TAMPER_NULL",
@@ -79,14 +61,13 @@ def detect_log_tampering(log_path):
                 if m:
                     time_str = m.group(1)
                     try:
-                        # Kuna syslogis pole aastat, määrame praeguse aasta (2026)
                         current_year = datetime.now().year
                         dt = datetime.strptime(f"{current_year} {time_str}", "%Y %b %d %H:%M:%S")
                         
                         if last_dt:
                             diff = (dt - last_dt).total_seconds()
                             
-                            # Kui aeg läheb tagasi (ja pole aasta vahetus), on logi muudetud või rünnatud
+                            # Kui aeg läheb tagasi, on logi manipuleeritud
                             if diff < 0:
                                 anomalies.append({
                                     "EventID": "TAMPER_TIME_INVERSION",
@@ -94,7 +75,7 @@ def detect_log_tampering(log_path):
                                     "User": "SYSTEM", "SourceIP": "LOCAL",
                                     "Detail": f"Rida {line_num}: Aeg hüppas tagasi! {last_dt} -> {dt}"
                                 })
-                            # Tõstame piiri 12 tunni peale (43200 sek), et vähendada tühiseid logipragusid
+                            # Logipraod (rohkem kui 12 tundi)
                             elif diff > 43200:
                                 anomalies.append({
                                     "EventID": "TAMPER_GAP",
@@ -113,21 +94,14 @@ def detect_log_tampering(log_path):
 def analyze_ssh_logins(log_path):
     """
     Süvaanalüüsib SSH ja õiguste kõrgendamise kirjeid.
-    Eraldab kasutaja ja IP-aadressi struktureeritud kujul.
     """
     results = []
     
-    # Laiendatud regex mustrid koos nimeliste gruppidega (?P<user>...) lihtsamaks parsimiseks
     patterns = [
-        # Edukas sisselogimine parooliga või võtmega
         (r'Accepted\s+(password|publickey)\s+for\s+(\S+)\s+from\s+(\S+)\s+port', '4624', 'Edukas SSH sisselogimine'),
-        # Ebaõnnestunud parool
         (r'Failed\s+password\s+for\s+(invalid user\s+)?(\S+)\s+from\s+(\S+)\s+port', '4625', 'Ebaõnnestunud parool'),
-        # Olematu kasutajaga õngitsemine (Brute Force indikaator)
         (r'Invalid\s+user\s+(\S+)\s+from\s+(\S+)\s+port', '4625', 'SSH rünre (Olematu kasutaja)'),
-        # Ründaja suleti enne autentimist tagant ära
         (r'Connection\s+closed\s+by\s+authenticating\s+user\s+(\S+)\s+(\S+)\s+port', '4625', 'SSH ühendus katkes keset autentimist'),
-        # Sudo käsud (Privilege Escalation jälgimine)
         (r'sudo:\s+(\S+)\s+:\s+TTY=.*\s+;\s+USER=(\S+)\s+;\s+COMMAND=(.*)', '4688', 'Sudo käsu käivitamine')
     ]
     
@@ -138,20 +112,24 @@ def analyze_ssh_logins(log_path):
                 for pattern, event_id, desc in patterns:
                     m = re.search(pattern, line_str, re.IGNORECASE)
                     if m:
-                        # Vaikimisi väärtused
                         user, source_ip = "UNKNOWN", "LOCAL"
-                        
-                        # Võtame väärtused vastavalt leitud reegli gruppidele
-                        if event_id == '4624': # Accepted
-                            user = m.group(2)
-                            source_ip = m.group(3)
-                        elif 'Failed' in pattern or 'Invalid' in pattern:
-                            user = m.group(m.lastindex - 1)
-                            source_ip = m.group(m.lastindex)
-                        elif 'sudo' in pattern:
-                            user = f"{m.group(1)} -> {m.group(2)}" # kes -> kelleks
-                            source_ip = "LOCAL"
-                            desc = f"Sudo: {m.group(3)[:50]}" # Lisame käsu alguse kirjelduseks
+                        try:
+                            if event_id == '4624':
+                                user = m.group(2)
+                                source_ip = m.group(3)
+                            elif 'Failed' in pattern or 'Invalid' in pattern or 'Connection' in pattern:
+                                # Turvaline viis indeksite leidmiseks ilma kokku jooksmata
+                                idx = m.lastindex
+                                if idx and idx >= 2:
+                                    source_ip = m.group(idx)
+                                    user = m.group(idx - 1)
+                            elif 'sudo' in pattern:
+                                user = f"{m.group(1)} -> {m.group(2)}"
+                                source_ip = "LOCAL"
+                                desc = f"Sudo: {m.group(3)[:50]}"
+                        except Exception:
+                            # Kui parsimine ebaõnnestub, säilitame vaikimisi väärtused, et logirida kaduma ei läheks
+                            pass
                         
                         results.append({
                             "EventID": event_id,
@@ -167,44 +145,49 @@ def analyze_ssh_logins(log_path):
 
 def main():
     print(LOGO)
-    out_dir = utils.get_output_dir()
+    os.makedirs(out_dir, exist_ok=True)
     out_file = os.path.join(out_dir, '23_tulemus_linux_syvaanaluus.csv')
     
-    # Otsime läbi potentsiaalsed logifailid (nii Ubuntu kui CentOS süsteemid)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Universaalsed ja paindlikud asukohad
     possible_paths = [
-        "/var/log/auth.log",   # Ubuntu/Debian
-        "/var/log/secure",     # CentOS/RHEL/Rocky
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "LOGID", "auth.log"),
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "LOGID", "secure")
+        "/var/log/auth.log",
+        "/var/log/secure",
+        os.path.join(base_dir, "..", "LOGID", "auth.log"),
+        os.path.join(base_dir, "..", "LOGID", "secure"),
+        os.path.join(base_dir, "LOGID", "auth.log"),
+        os.path.join(base_dir, "LOGID", "secure"),
+        os.path.join(base_dir, "auth.log"),
+        os.path.join(base_dir, "secure")
     ]
     
     active_logs = [p for p in possible_paths if os.path.exists(p)]
+    # Eemaldame topeltväärtused
+    active_logs = list(set(active_logs))
     
     if not active_logs:
-        logger.error("[-] Ühtegi autentimislogi (auth.log / secure) ei leitud!")
+        logger.warning("[-] Ühtegi autentimislogi (auth.log / secure) ei leitud analüüsimiseks!")
         return
 
     all_results = []
-    
     for log_path in active_logs:
         logger.info(f"[+] Alustan faili analüüsi: {log_path}")
-        
-        # 1. Käivita SSH/Sudo sündmuste analüüs
         all_results += analyze_ssh_logins(log_path)
-        
-        # 2. Käivita logi tervikluse kontroll (tampering)
         all_results += detect_log_tampering(log_path)
 
     if all_results:
-        # Salvestame tulemused CSV-sse. Päises on nüüd eraldi User ja SourceIP!
         headers = ["EventID", "Kirjeldus", "User", "SourceIP", "Detail"]
-        with open(out_file, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=headers)
-            writer.writeheader()
-            writer.writerows(all_results)
-        logger.info(f"[✓] Linuxi süvaanalüüs edukalt lõpetatud: {out_file} ({len(all_results)} leidu)")
+        try:
+            with open(out_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=headers)
+                writer.writeheader()
+                writer.writerows(all_results)
+            logger.info(f"[✓] Linuxi süvaanalüüs lõpetatud: {out_file} ({len(all_results)} leidu)")
+        except Exception as e:
+            logger.error(f"❌ Viga tulemuste faili kirjutamisel: {e}")
     else:
-        logger.warning("[-] Analüüsi käigus ei tuvastatud ühtegi relevantset sündmust.")
+        logger.warning("[-] Analüüsi käigus ei tuvastatud ühtegi anomaaliat ega sündmust.")
 
 if __name__ == "__main__":
     main()
