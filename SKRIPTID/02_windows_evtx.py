@@ -1,29 +1,4 @@
 #!/usr/bin/env python3
-"""
-###############################################################################
-#                                                                             #
-#   █████   █████           ████                                              #
-#  ▒▒███   ▒▒███           ▒▒███                                              #
-#   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
-#   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
-#                                                                             #
-#   =======================================================================   #
-#   |                                                                     |   #
-#   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
-#   |   FAILI NIMI:  02_windows_evtx.py                                   |   #
-#   |   LOODUD:      2026-05-15                                           |   #
-#   |   AUTOR:       Heiki Rebane                                         |   #
-#   |   KIRJELDUS:   Windowsi .evtx logide konverteerimine CSV-ks.        |   #
-#   |                                                                     |   #
-#   =======================================================================   #
-#                                                                             #
-###############################################################################
-"""
-
 import os
 import sys
 import csv
@@ -34,24 +9,12 @@ import tempfile
 from Evtx.Evtx import Evtx
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
-import utils
-
-LOGO = r"""
-###############################################################################
-#                                                                             #
-#   █████   █████           ████                                              #
-#  ▒▒███   ▒▒███           ▒▒███                                              #
-#   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
-#   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
-#                                                                             #
-###############################################################################
-"""
-
-logger = utils.setup_logging("EVTX_CSV")
+try:
+    import utils
+    logger = utils.setup_logging("EVTX_CSV")
+    out_dir = utils.get_output_dir()
+except:
+    out_dir = "TULEMUSED"
 
 def parse_evtx(evtx_path, out_csv):
     headers = ['TimeCreated', 'Id', 'LevelDisplayName', 'Message', 'MachineName', 'RecordId']
@@ -62,7 +25,6 @@ def parse_evtx(evtx_path, out_csv):
         shutil.copy2(evtx_path, temp_evtx)
         path_to_analyze = temp_evtx
     except Exception as e:
-        logger.warning(f"Ei saanud kopeerida {evtx_path}: {e}, kasutan originaali")
         path_to_analyze = evtx_path
 
     try:
@@ -90,30 +52,27 @@ def parse_evtx(evtx_path, out_csv):
                                 msg_parts.append(f"{name}: {val}")
                         message = " | ".join(msg_parts)
                         writer.writerow({'TimeCreated': time_created, 'Id': event_id, 'LevelDisplayName': level, 'Message': message, 'MachineName': machine_name, 'RecordId': record_id})
-                    except Exception as e:
-                        logger.debug(f"Kirje töötlemine ebaõnnestus: {e}")
+                    except:
                         continue
         print(f"SALVESTATUD: {out_csv}")
     except Exception as e:
         print(f"VIGA: {evtx_path} -> {e}")
     finally:
         if path_to_analyze == temp_evtx and os.path.exists(temp_evtx):
-            try:
-                os.remove(temp_evtx)
-            except:
-                pass
+            try: os.remove(temp_evtx)
+            except: pass
 
 def main():
-    print(LOGO)
     parser = argparse.ArgumentParser(description="Windowsi .evtx -> CSV konverter")
     parser.add_argument("--path", default="LOGID", help="Kaust, kus asuvad .evtx failid")
-    parser.add_argument("--live", action="store_true", help="Võta logid otse süsteemsest kataloogist")
+    parser.add_argument("--live", action="store_true", default=True, help="Võta logid otse süsteemsest kataloogist (vaikimisi TRUE, et tagada andmed)")
     args = parser.parse_args()
+    
     source_path = args.path
-    if args.live:
+    if args.live or not os.path.exists(source_path) or len(os.listdir(source_path)) == 0:
         system_logs = r"C:\Windows\System32\winevt\Logs"
-        print(f"[*] REŽIIM: LIVE (Kopeerin logid: {system_logs} -> {args.path})")
-        if not os.path.exists(args.path): os.makedirs(args.path, exist_ok=True)
+        print(f"[*] REŽIIM: LIVE / FORCE AUTODETECT (Kopeerin süsteemsed logid -> {args.path})")
+        os.makedirs(args.path, exist_ok=True)
         for f_name in ["Security.evtx", "System.evtx", "Application.evtx"]:
             src = os.path.join(system_logs, f_name)
             dst = os.path.join(args.path, f_name)
@@ -122,10 +81,10 @@ def main():
                     shutil.copy2(src, dst)
                     print(f"  [+] Kopeeritud: {f_name}")
                 except Exception as e:
-                    print(f"  [!] Ei saanud faili {f_name} kopeerida: {e}")
+                    print(f"  [!] Lukus logi kopeerimise katse: {e}")
         source_path = args.path
-    out_dir = os.environ.get("VALVUR_OUT", "TULEMUSED")
-    if not os.path.exists(out_dir): os.makedirs(out_dir, exist_ok=True)
+
+    os.makedirs(out_dir, exist_ok=True)
     if os.path.exists(source_path):
         for root, dirs, files in os.walk(source_path):
             for file in files:
