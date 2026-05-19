@@ -5,10 +5,10 @@
 #  ▒▒███   ▒▒███           ▒▒███                                              #
 #   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
 #   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
+#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███   ▒███ ▒▒▒             #
+#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███   ▒███                #
+#       ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████               #
+#        ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                #
 #                                                                             #
 #   =======================================================================   #
 #   |                                                                     |   #
@@ -60,7 +60,7 @@ function Main {
     # 3. Ajutine töökaust
     $workDir = Join-Path $env:TEMP "VALVUR_LIVE"
     if (Test-Path $workDir) {
-        Remove-Item -Recurse -Force $workDir
+        Remove-Item -Recurse -Force $workDir -ErrorAction SilentlyContinue
     }
     New-Item -ItemType Directory -Force -Path $workDir | Out-Null
     Set-Location $workDir
@@ -73,19 +73,22 @@ function Main {
         exit 1
     }
 
-    # 5. Virtuaalkeskkonna loomine
+    # 5. Virtuaalkeskkonna loomine süsteemi pakettidega (juhuks kui internetti pole)
     Write-Host "[*] Luuakse isoleeritud virtuaalkeskkond (venv)..." -ForegroundColor Cyan
-    python -m venv venv
+    python -m venv venv --system-site-packages
     $pythonExe = Join-Path $workDir "venv\Scripts\python.exe"
     if (-not (Test-Path $pythonExe)) {
         Write-Host "[!] VIGA: venv loomine ebaõnnestus!" -ForegroundColor Red
         exit 1
     }
 
-    # 6. Sõltuvuste paigaldamine
-    Write-Host "[*] Paigaldatakse sõltuvused..." -ForegroundColor Cyan
-    & $pythonExe -m pip install --upgrade pip 2>&1 | Out-Null
-    & $pythonExe -m pip install python-evtx python-docx rich psutil 2>&1 | Out-Host
+    # 6. Sõltuvuste paigaldamine (kui võrk on olemas)
+    Write-Host "[*] Kontrollitakse ja paigaldatakse sõltuvused..." -ForegroundColor Cyan
+    try {
+        & $pythonExe -m pip install python-evtx python-docx rich psutil --timeout 5 2>&1 | Out-Host
+    } catch {
+        Write-Host "[*] Hoiatus: Pip paigaldus ebaõnnestus, kasutatakse kohalikke pakette." -ForegroundColor Yellow
+    }
 
     # 7. Käivitamine
     Write-Host "`n" + "="*60 -ForegroundColor Cyan
@@ -93,17 +96,14 @@ function Main {
     Write-Host "   (interaktiivne master koos SCP eksfiltreerimisega)" -ForegroundColor Green
     Write-Host "="*60 + "`n" -ForegroundColor Cyan
 
-    # Edasta KALI_IP alamprotsessi
-    $envBlock = @{}
+    # Seadistame keskkonnamuutujad käimasolevas sessioonis
     if ($env:KALI_IP) {
-        $envBlock["KALI_IP"] = $env:KALI_IP
+        $env:KALI_IP = $env:KALI_IP
     }
-    $envBlock["VALVUR_OUT"] = Join-Path $workDir "TULEMUSED"
+    $env:VALVUR_OUT = Join-Path $workDir "TULEMUSED"
 
-    Start-Process -NoNewWindow -Wait -FilePath $pythonExe `
-        -ArgumentList "SKRIPTID/VALVUR_master.py" `
-        -WorkingDirectory $workDir `
-        -Environment $envBlock
+    # Käivitame Pythoni skripti otse ja puhtalt
+    & $pythonExe "SKRIPTID\VALVUR_master.py"
 }
 
 Main
