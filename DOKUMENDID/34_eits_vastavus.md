@@ -1,3 +1,4 @@
+```
 ###############################################################################
 #                                                                             #
 #   █████   █████           ████                                              #
@@ -16,7 +17,7 @@
 #   |   LOODUD:      2026-05-18                                           |   #
 #   |   AUTOR:       Heiki Rebane                                         |   #
 #   |   KIRJELDUS:   E-ITS 2024 baasturvalisuse kontroll - meetmete       |   #
-#   |                kirjeldus ja vastavustasemete selgitused.             |   #
+#   |                kirjeldus ja vastavustasemete selgitused.            |   #
 #   |                                                                     |   #
 #   =======================================================================   #
 #                                                                             #
