@@ -1,0 +1,1 @@
+Set-Content launch_VALVUR.ps1 -Value 'function Main { $env:KALI_IP="192.168.140.104"; Write-Host "VALVUR käivitub... Kali IP on seatud: $env:KALI_IP" -ForegroundColor Green; if (Test-Path "SKRIPTID\VALVUR_master.py") { python SKRIPTID\VALVUR_master.py } else { Write-Host "VIGA: Ei leidnud faili SKRIPTID\VALVUR_master.py!" -ForegroundColor Red } }; Main'
