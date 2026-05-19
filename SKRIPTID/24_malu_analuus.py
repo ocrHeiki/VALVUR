@@ -1,105 +1,76 @@
 #!/usr/bin/env python3
-"""
-###############################################################################
-#                                                                             #
-#   █████   █████           ████                                              #
-#  ▒▒███   ▒▒███           ▒▒███                                              #
-#   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
-#   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
-#                                                                             #
-#   =======================================================================   #
-#   |                                                                     |   #
-#   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
-#   |   FAILI NIMI:  24_malu_analuus.py                                   |   #
-#   |   LOODUD:      2026-05-15                                           |   #
-#   |   AUTOR:       Heiki Rebane                                         |   #
-#   |   KIRJELDUS:   Volatility 3 mäluanalüüsi liides.                    |   #
-#   |                                                                     |   #
-#   =======================================================================   #
-#                                                                             #
-###############################################################################
-"""
-
 import os
 import sys
 import subprocess
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
-import utils
+try:
+    import utils
+    logger = utils.setup_logging("MALU_ANALUUS")
+    out_dir = utils.get_output_dir()
+except:
+    class DummyLogger:
+        def info(self, msg): print(f"[INFO] {msg}")
+        def warning(self, msg): print(f"[WARN] {msg}")
+        def error(self, msg): print(f"[ERROR] {msg}")
+    logger = DummyLogger()
+    out_dir = "TULEMUSED"
 
 LOGO = r"""
 ###############################################################################
 #                                                                             #
-#   █████   █████           ████                                              #
-#  ▒▒███   ▒▒███           ▒▒███                                              #
-#   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
-#   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
+#   █████   █████            ████                                             #
+#  ▒▒███   ▒▒███            ▒▒███                                             #
+#   ▒███    ▒███   ██████    ▒███  █████ █████ █████ ████ ████████             #
+#   ▒███    ▒███  ▒▒▒▒▒███   ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
+#   ▒▒███   ███    ███████   ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
+#    ▒▒▒█████▒    ███▒▒███   ▒███  ▒▒███ ███    ▒███ ▒███  ▒███                 #
+#      ▒▒███     ▒▒████████ █████  ▒▒█████     ▒▒████████ █████                #
+#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
 #                                                                             #
 ###############################################################################
 """
 
-logger = utils.setup_logging("MALU_ANALUUS")
-
 def find_memory_dumps():
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dump_dir = os.path.join(base_dir, "MALUDUMPID")
-    if not os.path.exists(dump_dir):
-        return []
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Kontrollime nii skripti kõrval asuvat kui ka ühe taseme võrra kõrgemat kausta
+    possible_dirs = [
+        os.path.join(base_dir, "MALUDUMPID"),
+        os.path.join(base_dir, "..", "MALUDUMPID")
+    ]
+    
     dumps = []
-    for f in os.listdir(dump_dir):
-        if f.endswith(('.raw', '.mem', '.dmp', '.vmem')):
-            dumps.append(os.path.join(dump_dir, f))
-    return dumps
+    for dump_dir in possible_dirs:
+        if os.path.exists(dump_dir):
+            for f in os.listdir(dump_dir):
+                if f.lower().endswith(('.raw', '.mem', '.dmp', '.vmem', '.img')):
+                    dumps.append(os.path.join(dump_dir, f))
+    return list(set(dumps))
 
-def run_volatility(memory_file, plugin="windows.pslist"):
+def run_volatility(memory_file, plugin):
+    """Käivitab Volatility 3 käsu pikendatud ajalimiidiga."""
+    # Määrame käsu nime (mõnes süsteemis vol, mõnes vol3 või python3 vol.py)
+    # Kontrollime, mis on süsteemi paigaldatud
+    vol_cmd = "vol"
     try:
+        subprocess.check_output([vol_cmd, "--help"], stderr=subprocess.DEVNULL)
+    except FileNotFoundError:
+        try:
+            subprocess.check_output(["vol3", "--help"], stderr=subprocess.DEVNULL)
+            vol_cmd = "vol3"
+        except FileNotFoundError:
+            return None
+
+    print(f"    [>] Käivitan: {vol_cmd} -f {os.path.basename(memory_file)} {plugin} (Palun oota...)")
+    try:
+        # Tõstetud timeout 600 sekundi ehk 10 minuti peale, kuna suured mälutõmmised võtavad aega
         result = subprocess.check_output(
-            ["vol", "-f", memory_file, plugin],
-            stderr=subprocess.STDOUT, timeout=60
+            [vol_cmd, "-f", memory_file, plugin],
+            stderr=subprocess.STDOUT, timeout=600
         ).decode(errors='ignore')
         return result
-    except FileNotFoundError:
-        return None
     except subprocess.TimeoutExpired:
-        return "[!] Aegunud - mäluanalüüs katkestati (60s piir)"
+        return f"[!] VIGA: Mäluanalüüs aegus ({plugin} võttis rohkem kui 10 minutit)."
     except subprocess.CalledProcessError as e:
-        return f"[!] Viga: {e.output.decode(errors='ignore')}"
-
-def main():
-    print(LOGO)
-    out_dir = utils.get_output_dir()
-    out_file = os.path.join(out_dir, '24_tulemus_malu_analuus.txt')
-    dumps = find_memory_dumps()
-
-    with open(out_file, 'w', encoding='utf-8') as f:
-        f.write("VALVUR - MÄLUANALÜÜSI RAPORT\n" + "="*60 + "\n\n")
-
-        if not dumps:
-            f.write("Mälutõmmiseid ei leitud.\n")
-            f.write("Aseta .raw/.mem/.dmp failid kausta: MALUDUMPID/\n")
-            logger.warning("Mälutõmmiseid ei leitud")
-            print(f"  [!] Mälutõmmiseid ei leitud. Loo kaust MALUDUMPID/ ja lisa failid sinna.")
-            print(f"  [+] Tulemus: {out_file}")
-            return
-
-        for dump in dumps:
-            f.write(f"\n--- Analüüsin: {os.path.basename(dump)} ---\n")
-            logger.info(f"Analüüsin mälutõmmist: {dump}")
-            f.write("\n[Protsessid]\n")
-            output = run_volatility(dump, "windows.pslist")
-            if output is None:
-                f.write("Volatility 3 pole paigaldatud. Paigaldamiseks: pip install volatility3\n")
-                break
-            f.write(output)
-    logger.info(f"Mäluanalüüs valmis: {out_file}")
-
-if __name__ == "__main__":
-    main()
+        output = e.output.decode(errors='ignore')
+        # Kui plugin ei sobi operatsioonisüsteemiga, tagastame veateate spetsiif
