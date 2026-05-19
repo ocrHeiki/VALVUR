@@ -4,3 +4,5 @@ python -c "$(Invoke-WebRequest -UseBasicParsing $url).Content"
 
 
 winget install Python.Python.3.11 --silent --accept-package-agreements --accept-source-agreements
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
