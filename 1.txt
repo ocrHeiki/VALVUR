@@ -1,0 +1,21 @@
+function Main {
+    # Määrame Kali IP-aadressi
+    $env:KALI_IP = "192.168.140.104"
+    
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "   VALVUR KÄIVITUSFAIL (PARANDATUD)     " -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "Kali IP on seatud keskkonnamuutujaks: $env:KALI_IP" -ForegroundColor Yellow
+    
+    # Kontrollime, kas vajalik Pythoni skript on olemas
+    if (Test-Path "SKRIPTID\VALVUR_master.py") {
+        Write-Host "Käivitan Pythoni analüüsiskripti..." -ForegroundColor Green
+        python SKRIPTID\VALVUR_master.py
+    } else {
+        Write-Host "VIGA: Kausta 'SKRIPTID' seest puudub fail 'VALVUR_master.py'!" -ForegroundColor Red
+        Write-Host "Veendu, et oled PowerShellis õiges kaustas (kasuta käsku: ls)" -ForegroundColor Yellow
+    }
+}
+
+# Käivitame peafunktsiooni
+Main
