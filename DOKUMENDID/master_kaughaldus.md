@@ -52,7 +52,7 @@ Kali masina töölauale SCP protokolli kaudu.
 │  OS: Windows või Linux                                              │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │ 1. VALVUR kloonitakse GitHubist                              │   │
-│  │ 2. Luuakse Python venv                                      │   │
+│  │ 2. Luuakse Python venv                                       │   │
 │  │ 3. Käivitatakse VALVUR_master.py (interaktiivne menüü)       │   │
 │  │ 4. Analüüsitakse süsteemi                                    │   │
 │  │ 5. Tulemused pakitakse ZIP-ks                                │   │
