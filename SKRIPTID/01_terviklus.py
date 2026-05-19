@@ -1,52 +1,21 @@
 #!/usr/bin/env python3
-"""
-###############################################################################
-#                                                                             #
-#   █████   █████           ████                                              #
-#  ▒▒███   ▒▒███           ▒▒███                                              #
-#   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
-#   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
-#                                                                             #
-#   =======================================================================   #
-#   |                                                                     |   #
-#   |   PROJEKT:     VALVUR - Intsidendi süvaanalüüs                      |   #
-#   |   FAILI NIMI:  01_terviklus.py                                      |   #
-#   |   LOODUD:      2026-05-15                                           |   #
-#   |   AUTOR:       Heiki Rebane                                         |   #
-#   |   KIRJELDUS:   Logifailide SHA-256 räside arvutamine.               |   #
-#   |                                                                     |   #
-#   =======================================================================   #
-#                                                                             #
-###############################################################################
-"""
-
 import os
 import sys
 import hashlib
 
+# Universaalne utils laadimine
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
-import utils
-
-LOGO = r"""
-###############################################################################
-#                                                                             #
-#   █████   █████           ████                                              #
-#  ▒▒███   ▒▒███           ▒▒███                                              #
-#   ▒███    ▒███   ██████   ▒███  █████ █████ █████ ████ ████████             #
-#   ▒███    ▒███  ▒▒▒▒▒███  ▒███ ▒▒███ ▒▒███ ▒▒███ ▒███ ▒▒███▒▒███            #
-#   ▒▒███   ███    ███████  ▒███  ▒███  ▒███  ▒███ ▒███  ▒███ ▒▒▒             #
-#    ▒▒▒█████▒    ███▒▒███  ▒███  ▒▒███ ███   ▒███ ▒███  ▒███                 #
-#      ▒▒███     ▒▒████████ █████  ▒▒█████    ▒▒████████ █████                #
-#       ▒▒▒       ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒                 #
-#                                                                             #
-###############################################################################
-"""
-
-logger = utils.setup_logging("TERVIKLUS")
+try:
+    import utils
+    logger = utils.setup_logging("TERVIKLUS")
+    out_dir = utils.get_output_dir()
+except:
+    class DummyLogger:
+        def info(self, msg): print(f"[INFO] {msg}")
+        def warning(self, msg): print(f"[WARN] {msg}")
+        def error(self, msg): print(f"[ERROR] {msg}")
+    logger = DummyLogger()
+    out_dir = "TULEMUSED"
 
 def calculate_sha256(file_path):
     sha256_hash = hashlib.sha256()
@@ -56,21 +25,23 @@ def calculate_sha256(file_path):
     return sha256_hash.hexdigest()
 
 def check_all_logs():
-    print(LOGO)
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    log_dir = os.path.join(base_dir, "LOGID")
-    out_dir = utils.get_output_dir()
-    out_report = os.path.join(out_dir, '01_tulemus_terviklus_raport.txt')
-
+    # Kontrollime nii Downloads/LOGID kui ka jooksvat kausta
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    log_dir = os.path.join(base_dir, "..", "LOGID")
+    
     if not os.path.exists(log_dir):
-        os.makedirs(log_dir, exist_ok=True)
-        logger.warning(f"Kausta {log_dir} ei leitud, see loodi.")
-        return
+        log_dir = os.path.join(base_dir, "LOGID")
+    if not os.path.exists(log_dir):
+        log_dir = base_dir # Kui kuskil pole, otsi otse skripti kaustast
+
+    os.makedirs(out_dir, exist_ok=True)
+    out_report = os.path.join(out_dir, '01_tulemus_terviklus_raport.txt')
 
     results = []
     logger.info(f"Arvutan räsid logidele asukohas: {log_dir}")
 
     for root, dirs, files in os.walk(log_dir):
+        if "TULEMUSED" in root: continue # Ära skaneeri tulemusi
         for file in files:
             if file.lower().endswith(('.evtx', '.log', '.syslog')):
                 full_path = os.path.join(root, file)
@@ -89,7 +60,7 @@ def check_all_logs():
                 f.write(res + "\n")
         logger.info(f"Tervikluse raport loodud: {out_report}")
     else:
-        logger.warning("Ühtegi logifaili ei leitud.")
+        logger.warning("Ühtegi logifaili ei leitud räsimiseks.")
 
 if __name__ == "__main__":
     check_all_logs()
