@@ -6,3 +6,13 @@ python -c "$(Invoke-WebRequest -UseBasicParsing $url).Content"
 winget install Python.Python.3.11 --silent --accept-package-agreements --accept-source-agreements
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# 1. Liigume igaks juhuks Downloads kausta, et asjad ei läheks kaduma
+cd ~\Downloads
+
+# 2. Laadime alla VALVUR käivitusfaili (kontrolli, et aadressis poleks trükivigu)
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrmeiki/VALVUR/main/launch_VALVUR.ps1" -OutFile "launch_VALVUR.ps1" -UseBasicParsing
+
+# 3. Teeme SKRIPTID kausta ja tõmbame sinna sisse peamise Pythoni faili
+New-Item -ItemType Directory -Force -Path ".\SKRIPTID"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ocrmeiki/VALVUR/main/SKRIPTID/VALVUR_master.py" -OutFile ".\SKRIPTID\VALVUR_master.py" -UseBasicParsing
